@@ -19,7 +19,7 @@ public function __construct(
 	Settings $settings,
 	string $path,
 	string $tableName,
-	bool $forced
+	bool $forced = false
 ) {
 	$this->schema = $settings->getDatabase();
 	$this->path = $path;
@@ -199,6 +199,7 @@ protected function recordMigrationSuccess(int $number, string $hash) {
 }
 
 protected function selectSchema(bool $deleteAndRecreateSchema = false) {
+	// TODO: Split this into its own function. Function should only do what it says it does.
 	if($deleteAndRecreateSchema) {
 		$this->deleteAndRecreateSchema();
 	}

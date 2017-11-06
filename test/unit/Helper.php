@@ -7,6 +7,39 @@ class Helper {
 
 const COUNT_PATH_PROVIDER = 10;
 
+const QUERY_CREATE_TABLE_PERSON = <<<SQL
+create table person
+(
+    id int primary key auto_increment,
+    first_name varchar(32) not null,
+    last_name varchar(32) not null,
+    dob date not null
+);
+SQL;
+
+const QUERY_CREATE_TABLE_ADDRESS = <<<SQL
+create table address
+(
+    id int primary key auto_increment,
+    building varchar(32) not null,
+    street varchar(32),
+    district varchar(32),
+    town varchar(32),
+    county varchar(32),
+    postcode varchar(8) not null
+);
+SQL;
+
+const QUERY_CREATE_TABLE_PERSON_HAS_ADDRESS = <<<SQL
+create table person_has_address
+(
+    id_person int,
+    id_address int,
+    constraint person_has_address__composite primary key (id_person, id_address)
+);
+SQL;
+
+
 public static function getTmpDir() {
 	return implode("/", [
 		sys_get_temp_dir(),
