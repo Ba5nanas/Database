@@ -2,7 +2,7 @@
 
 namespace Gt\Database\Result;
 
-class EmptyResultSetException extends \Gt\Database\DatabaseException
+class EmptyResultSetException extends \Gt\Database\Exception
 {
     public function __construct()
     {
