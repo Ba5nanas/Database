@@ -27,6 +27,14 @@ public function testIsNotSet() {
 	self::assertFalse(isset($row->col2));
 }
 
+public function testEmpty() {
+	$row = new Row(["col1" => "item"]);
+	$empty1 = empty($row->col1);
+	$empty2 = empty($row->col2);
+	self::assertTrue($empty2);
+	self::assertFalse($empty1);
+}
+
 public function testGetNonExistentProperty() {
 	$row = new Row(["col1" => "item"]);
 	self::expectException(NoSuchColumnException::class);

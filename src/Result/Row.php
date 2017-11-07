@@ -19,11 +19,11 @@ public function __get($name) {
 		throw new NoSuchColumnException($name);
 	}
 
-	return $this->data[$name];
+	return $this->$name;
 }
 
-public function __isset($name) {
-	return array_key_exists($name, $this->data);
+public function __isset($name):bool {
+	return isset($this->$name);
 }
 
 protected function setProperties(array $data) {
