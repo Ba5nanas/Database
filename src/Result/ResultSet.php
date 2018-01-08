@@ -18,10 +18,19 @@ class ResultSet implements Iterator, Countable {
 	protected $row_index = null;
 	/** @var string */
 	protected $insertId = null;
+	protected $rowClassName = Row::class;
 
 	public function __construct(PDOStatement $statement, string $insertId = null) {
 		$this->statement = $statement;
 		$this->insertId = $insertId;
+	}
+
+	public function setRowType(string $className):void {
+		if(!class_exists($className, true)) {{
+			throw new RowSubClassDoesNotExistException($className);
+		}}
+
+		$this->rowClassName = $className;
 	}
 
 	public function affectedRows():int {
@@ -48,7 +57,8 @@ class ResultSet implements Iterator, Countable {
 			$this->current_row = null;
 		}
 		else {
-			$this->current_row = new Row($data);
+			$this->setDataTypes($data, $this->rowClassName);
+			$this->current_row = new $this->rowClassName($data);
 		}
 
 		return $this->current_row;
