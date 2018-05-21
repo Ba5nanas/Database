@@ -331,16 +331,56 @@ class MigratorTest extends TestCase {
 		$settings = $this->createSettings($path);
 		$migrator = new Migrator($settings, $path);
 
-		$dataFileList = array_map(function($path) {
-			return substr(
-				$path,
-				strpos($path, DIRECTORY_SEPARATOR) + 1
-			);
-		}, $dataFileList);
-
 		self::assertSame(
 			$dataFileList,
 			$migrator->getDataFileList()
+		);
+	}
+
+	/**
+	 * @dataProvider dataMigrationFileList
+	 */
+	public function testMergeMigrationDataFileList(array $fileList):void {
+		$dataFileList = $this->getDataFilesFromMigrationFileList(
+			$fileList
+		);
+
+		$path = $this->getMigrationDirectory();
+
+		$settings = $this->createSettings($path);
+		$migrator = new Migrator($settings, $path);
+		$this->createDataFiles($dataFileList, $path);
+
+		$injectedFileList = [];
+		$i = 0;
+
+		foreach($dataFileList as $dataFile) {
+			$dataFileNum = substr(
+				$dataFile,
+				strpos($dataFile, DIRECTORY_SEPARATOR) + 1
+			);
+
+			$dataFileNum = substr(
+				$dataFileNum,
+				0,
+				strpos($dataFileNum, "-")
+			);
+			$dataFileNum = (int)$dataFileNum;
+
+			while($i < $dataFileNum) {
+				$injectedFileList []= $fileList[$i];
+				$i++;
+			}
+
+			$injectedFileList []= $dataFile;
+		}
+
+		self::assertSame(
+			$injectedFileList,
+			$migrator->mergeMigrationDataFileList(
+				$fileList,
+				$dataFileList
+			)
 		);
 	}
 

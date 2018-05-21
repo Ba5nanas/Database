@@ -11,6 +11,7 @@ class Migrator {
 	const COLUMN_QUERY_NUMBER = "query_number";
 	const COLUMN_QUERY_HASH = "query_hash";
 	const COLUMN_MIGRATED_AT = "migrated_at";
+	const DATA_DIRECOTRY = "data";
 
 	protected $dataSource;
 	protected $schema;
@@ -121,23 +122,44 @@ class Migrator {
 	public function getDataFileList():array {
 		$dataPath = implode(DIRECTORY_SEPARATOR, [
 			$this->path,
-			"data",
+			self::DATA_DIRECOTRY,
 		]);
+
 		$fileList = scandir($dataPath);
 		sort($fileList);
 
 		$fileList = array_filter($fileList, function($path) {
 			return $path[0] !== ".";
 		});
+		$fileList = array_map(function($path) {
+			return implode(DIRECTORY_SEPARATOR, [
+				self::DATA_DIRECOTRY,
+				$path,
+			]);
+		}, $fileList);
 
 		return array_values($fileList);
 	}
 
-	public function mergeMigrationDatafileList(
+	public function mergeMigrationDataFileList(
 		array $migrationFileList,
 		array $dataFileList
 	):array {
-		// TODO.
+		$merged = [];
+		$i = 0;
+
+		foreach($dataFileList as $dataFile) {
+			$dataFileNum = $this->extractNumberFromFilename($dataFile);
+
+			while($i < $dataFileNum) {
+				$merged []= $migrationFileList[$i];
+				$i++;
+			}
+
+			$merged []= $dataFile;
+		}
+
+		return $merged;
 	}
 
 	public function checkFileListOrder(array $fileList):void {
