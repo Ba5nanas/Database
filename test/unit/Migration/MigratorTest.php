@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection SqlNoDataSourceInspection */
 namespace Gt\Database\Test\Migration;
 
 use Exception;
@@ -17,6 +17,7 @@ class MigratorTest extends TestCase {
 	const MIGRATION_CREATE
 		= "create table `test` (`id` int primary key, `name` varchar(32))";
 	const MIGRATION_ALTER = "alter table `test` add `new_column` varchar(32)";
+	const MIGRATION_INSERT = "insert into `test` (`name`) values (?)";
 
 	public function getMigrationDirectory():string {
 		$tmp = Helper::getTmpDir();
@@ -314,6 +315,65 @@ class MigratorTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider dataMigrationFileList
+	 */
+	public function testGetDataFileList(array $fileList):void {
+		$dataFileList = $this->getDataFilesFromMigrationFileList(
+			$fileList
+		);
+
+		$path = $this->getMigrationDirectory();
+
+		$this->createMigrationFiles($fileList, $path);
+		$this->createDataFiles($dataFileList, $path);
+
+		$settings = $this->createSettings($path);
+		$migrator = new Migrator($settings, $path);
+
+		$dataFileList = array_map(function($path) {
+			return substr(
+				$path,
+				strpos($path, DIRECTORY_SEPARATOR) + 1
+			);
+		}, $dataFileList);
+
+		self::assertSame(
+			$dataFileList,
+			$migrator->getDataFileList()
+		);
+	}
+
+	protected function getDataFilesFromMigrationFileList(array $migrationFileList):array {
+		$numberOfDataFiles = rand(1, count($migrationFileList) - 1);
+		shuffle($migrationFileList);
+		$reduced = array_slice(
+			$migrationFileList,
+			0,
+			$numberOfDataFiles
+		);
+		sort($reduced);
+
+		return array_map(
+			[$this, "convertMigrationFileToDataFile"],
+			$reduced
+		);
+	}
+
+	public function convertMigrationFileToDataFile(string $migrationFile):string {
+		$number = substr(
+			$migrationFile,
+			0,
+			strpos($migrationFile, "-")
+		);
+		$fileName = "$number-data-" . uniqid() . ".sql";
+
+		return implode(DIRECTORY_SEPARATOR, [
+			"data",
+			$fileName,
+		]);
+	}
+
 	public function dataMigrationFileList():array {
 		$fileList = $this->generateFileList();
 		return [
@@ -359,6 +419,26 @@ class MigratorTest extends TestCase {
 				);
 			}
 
+			file_put_contents($migPathName, $mig);
+		}
+	}
+
+	protected function createDataFiles(array $dataFileList, string $path):void {
+		foreach($dataFileList as $i => $fileName) {
+			$migPathName = implode(DIRECTORY_SEPARATOR, [
+				$path,
+				$fileName,
+			]);
+
+			if(!is_dir(dirname($migPathName)) ) {
+				mkdir(
+					dirname($migPathName),
+					0775,
+					true
+				);
+			}
+
+			$mig = self::MIGRATION_INSERT;
 			file_put_contents($migPathName, $mig);
 		}
 	}

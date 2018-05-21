@@ -119,7 +119,18 @@ class Migrator {
 	}
 
 	public function getDataFileList():array {
-		// TODO.
+		$dataPath = implode(DIRECTORY_SEPARATOR, [
+			$this->path,
+			"data",
+		]);
+		$fileList = scandir($dataPath);
+		sort($fileList);
+
+		$fileList = array_filter($fileList, function($path) {
+			return $path[0] !== ".";
+		});
+
+		return array_values($fileList);
 	}
 
 	public function mergeMigrationDatafileList(
