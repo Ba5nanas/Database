@@ -221,10 +221,11 @@ class Migrator {
 
 	public function performMigration(
 		array $migrationFileList,
-		int $existingMigrationCount = 0,
-		array $dataFileList = []
+		int $existingMigrationCount = 0
 	):int {
 		foreach($migrationFileList as $i => $file) {
+			$dataDirectory = self::DATA_DIRECOTRY . DIRECTORY_SEPARATOR;
+
 			$fileNumber = $i + 1;
 
 			if($fileNumber <= $existingMigrationCount) {

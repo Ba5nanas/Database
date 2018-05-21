@@ -318,6 +318,31 @@ class MigratorTest extends TestCase {
 	/**
 	 * @dataProvider dataMigrationFileList
 	 */
+	public function testMigrationPerformedWithData(array $fileList):void {
+
+	}
+
+	/**
+	 * @dataProvider dataMigrationFileList
+	 */
+	public function testMigrationPerformedAfterNumber(array $fileList):void {
+
+	}
+
+	/**
+	 * @dataProvider dataMigrationFileList
+	 */
+	public function testMigrationPerformedError(array $fileList):void {
+
+	}
+
+	public function testMigrationPerformedErrorResumesCorrectly(array $fileList):void {
+
+	}
+
+	/**
+	 * @dataProvider dataMigrationFileList
+	 */
 	public function testGetDataFileList(array $fileList):void {
 		$dataFileList = $this->getDataFilesFromMigrationFileList(
 			$fileList
