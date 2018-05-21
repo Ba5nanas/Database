@@ -95,7 +95,7 @@ class Migrator {
 		return $row->{self::COLUMN_QUERY_NUMBER} ?? 0;
 	}
 
-	public function getMigrationFileList():array {
+	public function getMigrationFileList(bool $withData = false):array {
 		if(!is_dir($this->path)) {
 			throw new MigrationDirectoryNotFoundException(
 				$this->path
@@ -116,6 +116,17 @@ class Migrator {
 
 		sort($fileList);
 		return $fileList;
+	}
+
+	public function getDataFileList():array {
+		// TODO.
+	}
+
+	public function mergeMigrationDatafileList(
+		array $migrationFileList,
+		array $dataFileList
+	):array {
+		// TODO.
 	}
 
 	public function checkFileListOrder(array $fileList):void {
@@ -177,7 +188,8 @@ class Migrator {
 
 	public function performMigration(
 		array $migrationFileList,
-		int $existingMigrationCount = 0
+		int $existingMigrationCount = 0,
+		array $dataFileList = []
 	):int {
 		foreach($migrationFileList as $i => $file) {
 			$fileNumber = $i + 1;
