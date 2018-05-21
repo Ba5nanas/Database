@@ -319,7 +319,48 @@ class MigratorTest extends TestCase {
 	 * @dataProvider dataMigrationFileList
 	 */
 	public function testMigrationPerformedWithData(array $fileList):void {
+		$path = $this->getMigrationDirectory();
+		$dataFileList = $this->getDataFilesFromMigrationFileList(
+			$fileList
+		);
 
+		$this->createMigrationFiles($fileList, $path);
+		$this->createDataFiles($dataFileList, $path);
+
+		$settings = $this->createSettings($path);
+		$migrator = new Migrator($settings, $path);
+
+		$fileListMerged = $migrator->mergeMigrationDataFileList(
+			$fileList,
+			$dataFileList
+		);
+
+		$absoluteFileList = array_map(function($file)use($path) {
+			return implode(DIRECTORY_SEPARATOR, [
+				$path,
+				$file,
+			]);
+		},$fileListMerged);
+
+		$migrator->createMigrationTable();
+
+		$exception = null;
+
+		try {
+			$migrator->performMigration($absoluteFileList);
+		}
+		catch(Exception $exception) {}
+
+		self::assertNull($exception,"No exception should be thrown");
+
+		$db = new Client($settings);
+		$result = $db->executeSql("select count(*) as numRows from test");
+		$row = $result->fetch();
+
+		self::assertEquals(
+			count($dataFileList),
+			$row->numRows
+		);
 	}
 
 	/**
