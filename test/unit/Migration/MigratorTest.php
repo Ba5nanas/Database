@@ -367,18 +367,21 @@ class MigratorTest extends TestCase {
 	 * @dataProvider dataMigrationFileList
 	 */
 	public function testMigrationPerformedAfterNumber(array $fileList):void {
-
+		self::markTestIncomplete();
 	}
 
 	/**
 	 * @dataProvider dataMigrationFileList
 	 */
 	public function testMigrationPerformedError(array $fileList):void {
-
+		self::markTestIncomplete();
 	}
 
+	/**
+	 * @dataProvider dataMigrationFileList
+	 */
 	public function testMigrationPerformedErrorResumesCorrectly(array $fileList):void {
-
+		self::markTestIncomplete();
 	}
 
 	/**
