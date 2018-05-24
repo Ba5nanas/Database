@@ -355,7 +355,7 @@ class MigratorTest extends TestCase {
 
 		self::assertNull($exception,"No exception should be thrown");
 
-		$db = new Client($settings);
+		$db = new Database($settings);
 		$result = $db->executeSql("select count(*) as numRows from test");
 		$row = $result->fetch();
 
